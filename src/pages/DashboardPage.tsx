@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { KeyboardEvent, ReactNode } from 'react'
 import {
   Activity,
   AlertTriangle,
@@ -103,8 +103,17 @@ function ActionStepCard({
   icon,
   onClick,
 }: ActionStepProps) {
+  function handleKeyDown(event: KeyboardEvent<HTMLElement>) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return
+    }
+
+    event.preventDefault()
+    onClick()
+  }
+
   return (
-    <article className="dashboard-action-card">
+    <article className="dashboard-action-card" role="button" tabIndex={0} onClick={onClick} onKeyDown={handleKeyDown}>
       <div className="action-step-index">{step}</div>
       <div className="action-step-icon">{icon}</div>
       <div className="action-step-content">
@@ -113,7 +122,14 @@ function ActionStepCard({
           <Badge tone={statusTone}>{status}</Badge>
         </div>
         <p>{description}</p>
-        <Button type="button" variant="ghost" onClick={onClick}>
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={(event) => {
+            event.stopPropagation()
+            onClick()
+          }}
+        >
           {actionLabel}
           <ArrowRight size={15} />
         </Button>

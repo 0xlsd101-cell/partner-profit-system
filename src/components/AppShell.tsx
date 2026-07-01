@@ -6,11 +6,13 @@ import {
   CreditCard,
   Gauge,
   LineChart,
+  Menu,
   ScrollText,
   Settings,
   Users,
+  X,
 } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Badge } from './common'
 
 export type PageKey =
@@ -26,7 +28,9 @@ export type PageKey =
   | 'backup'
   | 'settings'
 
-const navGroups = [
+type NavItem = { key: PageKey; label: string; icon: typeof Gauge }
+
+const navGroups: Array<{ label: string; items: NavItem[] }> = [
   {
     label: '日常操作',
     items: [
@@ -47,7 +51,9 @@ const navGroups = [
       { key: 'settings', label: '系统设置', icon: Settings },
     ],
   },
-] satisfies Array<{ label: string; items: Array<{ key: PageKey; label: string; icon: typeof Gauge }> }>
+] 
+
+const navItems: NavItem[] = navGroups.flatMap((group) => group.items)
 
 interface AppShellProps {
   activePage: PageKey
@@ -57,44 +63,113 @@ interface AppShellProps {
 }
 
 export function AppShell({ activePage, onPageChange, children, toast }: AppShellProps) {
-  return (
-    <div className="app-shell">
-      <aside className="sidebar">
-        <div className="brand">
-          <div className="brand-mark">¥</div>
-          <div>
-            <strong>合伙人收益系统</strong>
-            <span>本地版</span>
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
+  const activePageTitle = useMemo(
+    () => navItems.find((item) => item.key === activePage)?.label ?? '首页总览',
+    [activePage],
+  )
+
+  useEffect(() => {
+    setIsMobileNavOpen(false)
+  }, [activePage])
+
+  useEffect(() => {
+    if (!isMobileNavOpen) {
+      return undefined
+    }
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMobileNavOpen(false)
+      }
+    }
+
+    document.body.classList.add('mobile-nav-open')
+    window.addEventListener('keydown', closeOnEscape)
+
+    return () => {
+      document.body.classList.remove('mobile-nav-open')
+      window.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [isMobileNavOpen])
+
+  const renderNavigation = (variant: 'desktop' | 'mobile') => (
+    <>
+      <div className="brand">
+        <div className="brand-mark">¥</div>
+        <div>
+          <strong>合伙人收益系统</strong>
+          <span>本地版</span>
+        </div>
+      </div>
+
+      <nav className="nav-list" aria-label={variant === 'mobile' ? '移动端主导航' : '主导航'}>
+        {navGroups.map((group) => (
+          <div key={group.label} className="nav-group">
+            <span className="nav-group-label">{group.label}</span>
+            {group.items.map((item) => {
+              const Icon = item.icon
+
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  className={item.key === activePage ? 'nav-item nav-item-active' : 'nav-item'}
+                  onClick={() => onPageChange(item.key)}
+                >
+                  <Icon size={18} />
+                  <span>{item.label}</span>
+                </button>
+              )
+            })}
           </div>
+        ))}
+      </nav>
+
+      <div className="sidebar-footer">
+        <Badge tone="success">本地数据</Badge>
+        <span>{variant === 'mobile' ? '当前版本 V1.0' : '无云同步 · 无登录'}</span>
+      </div>
+    </>
+  )
+
+  return (
+    <div className={isMobileNavOpen ? 'app-shell mobile-nav-is-open' : 'app-shell'}>
+      <header className="mobile-topbar">
+        <button
+          type="button"
+          className="mobile-menu-button"
+          aria-label="打开菜单"
+          aria-expanded={isMobileNavOpen}
+          onClick={() => setIsMobileNavOpen(true)}
+        >
+          <Menu size={20} />
+        </button>
+        <div className="mobile-topbar-title">
+          <strong>{activePageTitle}</strong>
+          <span>合伙人收益系统 · 本地版</span>
         </div>
+      </header>
 
-        <nav className="nav-list" aria-label="主导航">
-          {navGroups.map((group) => (
-            <div key={group.label} className="nav-group">
-              <span className="nav-group-label">{group.label}</span>
-              {group.items.map((item) => {
-                const Icon = item.icon
+      <button
+        type="button"
+        className="mobile-nav-backdrop"
+        aria-label="关闭菜单"
+        onClick={() => setIsMobileNavOpen(false)}
+      />
 
-                return (
-                  <button
-                    key={item.key}
-                    type="button"
-                    className={item.key === activePage ? 'nav-item nav-item-active' : 'nav-item'}
-                    onClick={() => onPageChange(item.key)}
-                  >
-                    <Icon size={18} />
-                    <span>{item.label}</span>
-                  </button>
-                )
-              })}
-            </div>
-          ))}
-        </nav>
+      <aside className="sidebar desktop-sidebar">{renderNavigation('desktop')}</aside>
 
-        <div className="sidebar-footer">
-          <Badge tone="success">本地数据</Badge>
-          <span>无云同步 · 无登录</span>
-        </div>
+      <aside className="sidebar mobile-drawer" aria-hidden={!isMobileNavOpen}>
+        <button
+          type="button"
+          className="mobile-drawer-close"
+          aria-label="关闭菜单"
+          onClick={() => setIsMobileNavOpen(false)}
+        >
+          <X size={18} />
+        </button>
+        {renderNavigation('mobile')}
       </aside>
 
       <main className="main-area">
