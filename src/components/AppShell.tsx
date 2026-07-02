@@ -14,7 +14,12 @@ import {
 } from 'lucide-react'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Badge } from './common'
-import { APP_VERSION } from '../utils/runtimeInfo'
+import {
+  APP_NAME,
+  applyRuntimeWindowTitle,
+  appEditionLabel,
+  appVersionLabel,
+} from '../utils/runtimeInfo'
 
 export type PageKey =
   | 'dashboard'
@@ -71,6 +76,10 @@ export function AppShell({ activePage, onPageChange, children, toast }: AppShell
   )
 
   useEffect(() => {
+    void applyRuntimeWindowTitle()
+  }, [])
+
+  useEffect(() => {
     setIsMobileNavOpen(false)
   }, [activePage])
 
@@ -99,8 +108,8 @@ export function AppShell({ activePage, onPageChange, children, toast }: AppShell
       <div className="brand">
         <div className="brand-mark">¥</div>
         <div>
-          <strong>合伙人收益系统</strong>
-          <span>本地版</span>
+          <strong>{APP_NAME}</strong>
+          <span>{appEditionLabel()}</span>
         </div>
       </div>
 
@@ -129,7 +138,7 @@ export function AppShell({ activePage, onPageChange, children, toast }: AppShell
 
       <div className="sidebar-footer">
         <Badge tone="success">本地数据</Badge>
-        <span>{variant === 'mobile' ? `当前版本 V${APP_VERSION}` : `无云同步 · V${APP_VERSION}`}</span>
+        <span>{variant === 'mobile' ? `当前版本 ${appVersionLabel()}` : `无云同步 · ${appVersionLabel()}`}</span>
       </div>
     </>
   )
@@ -148,7 +157,7 @@ export function AppShell({ activePage, onPageChange, children, toast }: AppShell
         </button>
         <div className="mobile-topbar-title">
           <strong>{activePageTitle}</strong>
-          <span>合伙人收益系统 · 本地版</span>
+          <span>{APP_NAME} · {appEditionLabel()}</span>
         </div>
       </header>
 

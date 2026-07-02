@@ -1,4 +1,5 @@
 use tauri_plugin_sql::{Migration, MigrationKind};
+use tauri::Manager;
 
 const SQLITE_CONNECTION: &str = "sqlite:partner-profit-system.sqlite";
 
@@ -14,6 +15,13 @@ fn sqlite_migrations() -> Vec<Migration> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.unminimize();
+                let _ = window.show();
+                let _ = window.set_focus();
+            }
+        }))
         .plugin(
             tauri_plugin_sql::Builder::default()
                 .add_migrations(SQLITE_CONNECTION, sqlite_migrations())
