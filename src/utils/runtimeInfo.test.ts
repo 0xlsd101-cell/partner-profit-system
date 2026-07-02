@@ -24,12 +24,16 @@ describe('runtime info', () => {
     const packageJson = readJson<{ version: string }>('package.json')
     const tauriConfig = readJson<{
       app: { windows: Array<{ label?: string; title?: string }> }
+      bundle: { icon?: string[]; windows?: { nsis?: { installerIcon?: string; uninstallerIcon?: string } } }
     }>('src-tauri/tauri.conf.json')
 
     expect(tauriConfig.app.windows).toHaveLength(1)
     expect(tauriConfig.app.windows[0]?.label).toBe('main')
     expect(tauriConfig.app.windows[0]?.title).toBe(`${APP_NAME} V${packageJson.version}`)
     expect(tauriConfig.app.windows[0]?.title).not.toContain('V1.1 桌面离线版')
+    expect(tauriConfig.bundle.icon).toContain('icons/icon.ico')
+    expect(tauriConfig.bundle.windows?.nsis?.installerIcon).toBe('icons/icon.ico')
+    expect(tauriConfig.bundle.windows?.nsis?.uninstallerIcon).toBe('icons/icon.ico')
   })
 
   it('keeps settings and shell pages wired to runtime version helpers', () => {
