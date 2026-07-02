@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
 node_modules/.vite/
+src-tauri/target/
 
 # Build outputs
 dist/
@@ -39,6 +40,7 @@ Thumbs.db
 
 # Internal acceptance evidence and real trial data
 release-evidence/
+release-installers/
 data/trial/
 data/archive/
 

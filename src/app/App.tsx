@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { AppShell, type PageKey } from '../components/AppShell'
 import { emptyAppData, type AppData } from '../domain/types'
-import { IndexedDbRepository } from '../storage/indexedDbRepository'
+import { createPartnerRepository } from '../storage/repositoryFactory'
 import { AnnualSummaryPage } from '../pages/AnnualSummaryPage'
 import { BackupPage } from '../pages/BackupPage'
 import { CapitalTransactionsPage } from '../pages/CapitalTransactionsPage'
@@ -15,7 +15,7 @@ import { ProfitCalculatorPage } from '../pages/ProfitCalculatorPage'
 import { SystemSettingsPage } from '../pages/SystemSettingsPage'
 
 function App() {
-  const repository = useMemo(() => new IndexedDbRepository(), [])
+  const repository = useMemo(() => createPartnerRepository(), [])
   const [activePage, setActivePage] = useState<PageKey>('dashboard')
   const [data, setData] = useState<AppData>(emptyAppData)
   const [loading, setLoading] = useState(true)

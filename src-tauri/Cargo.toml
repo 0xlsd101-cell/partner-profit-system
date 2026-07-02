@@ -1,0 +1,19 @@
+[package]
+name = "partner-profit-system"
+version = "1.1.1"
+description = "合伙人收益系统 V1.1 桌面离线版"
+authors = ["partner-profit-system"]
+edition = "2021"
+
+[lib]
+name = "partner_profit_system_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

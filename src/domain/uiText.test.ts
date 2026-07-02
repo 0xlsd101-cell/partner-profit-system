@@ -75,9 +75,9 @@ describe('Chinese visual interface text', () => {
     const clearSafety = source('storage/dataClearSafety.ts')
 
     expect(clearSafety).toContain('危险操作：清除本地数据')
-    expect(clearSafety).toContain('此操作将清除当前浏览器中的本地业务数据')
+    expect(clearSafety).toContain('此操作将清除当前设备中的本地业务数据')
     expect(clearSafety).toContain('请先导出完整备份文件，再继续操作。')
-    expect(clearSafety).toContain('清除后无法从当前浏览器恢复')
+    expect(clearSafety).toContain('清除后无法从当前设备恢复')
     expect(clearSafety).toContain('如果确认清除，请输入：')
     expect(clearSafety).toContain('确认清除本地数据')
     expect(backupPage).toContain('我已备份，确认清除')
@@ -141,5 +141,13 @@ describe('Chinese visual interface text', () => {
     expect(source('pages/AnnualSummaryPage.tsx')).toContain('公历自然年度')
     expect(styles).not.toContain('partnerAnnualRate')
     expect(styles).not.toContain('actualDistributableNetIncome')
+  })
+
+  it('keeps manager special profit displayed from allocation details', () => {
+    const monthlyPage = source('pages/MonthlySettlementPage.tsx')
+
+    expect(monthlyPage).toContain('const managerSpecialProfit')
+    expect(monthlyPage).toContain('allocation.managerSpecialProfit')
+    expect(monthlyPage).not.toContain('formatMoney(calculation.settlement.managerProfit)')
   })
 })

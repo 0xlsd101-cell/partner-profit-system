@@ -94,7 +94,7 @@ const clearScopeRows: Array<{ key: keyof ClearLocalDataCounts; label: string; no
   { key: 'adjustmentRecords', label: '调整记录' },
   { key: 'annualDividendConfirmations', label: '年度分红确认单' },
   { key: 'profitCalculatorRecords', label: '收益计算器记录' },
-  { key: 'operationLogs', label: '操作日志', note: '清空旧日志后保留本次清除记录' },
+  { key: 'operationLogs', label: '操作日志' },
 ]
 
 export function BackupPage({ data, repository, reload, notify }: PageProps) {
@@ -371,7 +371,7 @@ function parseBackupSummary(raw: string) {
     }
 
     const finalConfirm = window.confirm(
-      `最后确认：将清除当前浏览器中的 ${clearableRecordCount} 条本地记录，包括已锁定月份、收益明细和支付记录。系统只会保留本次清除操作日志。是否继续？`,
+      `最后确认：将清除当前设备中的 ${clearableRecordCount} 条本地记录，包括已锁定月份、收益明细、支付记录和操作日志。是否继续？`,
     )
 
     if (!finalConfirm) {
@@ -389,9 +389,13 @@ function parseBackupSummary(raw: string) {
       setClearReason('')
       setClearMessage('')
       await reload()
-      notify('本地数据已清除，系统已保留本次清除操作记录。')
+      notify('本地数据已清除。')
     } catch (err) {
-      setClearMessage(err instanceof Error ? err.message : '清除本地数据失败。')
+      setClearMessage(
+        err instanceof Error
+          ? `本地数据清除失败，请先导出备份后重试。${err.message}`
+          : '本地数据清除失败，请先导出备份后重试。',
+      )
     }
   }
 
@@ -548,7 +552,7 @@ function parseBackupSummary(raw: string) {
 
       <Panel
         title={CLEAR_LOCAL_DATA_TITLE}
-        description="高风险操作：仅清除当前浏览器中的本地业务数据，不影响已导出的备份文件。"
+        description="高风险操作：仅清除当前设备中的本地业务数据，不影响已导出的备份文件。"
       >
         <Notice tone="danger">
           <strong>{CLEAR_LOCAL_DATA_SCOPE_DESCRIPTION}</strong>

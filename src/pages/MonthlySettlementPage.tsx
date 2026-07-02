@@ -359,6 +359,15 @@ export function MonthlySettlementPage({ data, repository, reload, notify }: Page
             decimal(0),
           ),
         )
+  const managerSpecialProfit =
+    typeof calculation === 'string'
+      ? '0.00'
+      : moneyString(
+          calculation.allocations.reduce(
+            (sum, allocation) => sum.plus(allocation.managerSpecialProfit ?? 0),
+            decimal(0),
+          ),
+        )
   const settlementStatusLabel = existing?.status === 'adjusted'
     ? '已调整'
     : isLocked
@@ -609,7 +618,7 @@ export function MonthlySettlementPage({ data, repository, reload, notify }: Page
               </div>
               <div className="summary-item">
                 <span>负责人专项收益</span>
-                <strong>{formatMoney(calculation.settlement.managerProfit)}</strong>
+                <strong>{formatMoney(managerSpecialProfit)}</strong>
                 <small>非负责人折算本金 × 负责人专项月收益率</small>
               </div>
               <div className="summary-item">

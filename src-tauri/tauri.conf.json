@@ -1,0 +1,37 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "合伙人收益系统",
+  "version": "1.1.1",
+  "identifier": "com.partnerprofit.system",
+  "build": {
+    "beforeDevCommand": "npm.cmd run dev -- --host 127.0.0.1 --port 5173 --strictPort",
+    "beforeBuildCommand": "npm.cmd run desktop:build",
+    "devUrl": "http://127.0.0.1:5173",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "合伙人收益系统 V1.1 桌面离线版",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 1024,
+        "minHeight": 700,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"]
+  },
+  "plugins": {
+    "sql": {
+      "preload": ["sqlite:partner-profit-system.sqlite"]
+    }
+  }
+}

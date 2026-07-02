@@ -647,28 +647,6 @@ export class IndexedDbRepository implements PartnerRepository {
           this.db.operationLogs.clear(),
           this.db.profitCalculatorRecords.clear(),
         ])
-
-        await this.db.operationLogs.put({
-          id: createId('op_log'),
-          action: 'local_data_clear',
-          entityType: 'system',
-          entityId: 'local_indexeddb',
-          beforeSnapshot: snapshot(counts),
-          afterSnapshot: snapshot({
-            members: 0,
-            capitalLots: 0,
-            capitalTransactions: 0,
-            monthlySettlements: 0,
-            monthlyAllocations: 0,
-            dividendPayments: 0,
-            adjustmentRecords: 0,
-            annualDividendConfirmations: 0,
-            operationLogs: 1,
-            profitCalculatorRecords: 0,
-          }),
-          note: options.reason?.trim() || '用户手动清除本地数据',
-          createdAt: nowIso(),
-        })
       },
     )
   }
