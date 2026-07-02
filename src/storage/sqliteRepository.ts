@@ -47,6 +47,7 @@ import {
   sqliteCreateTableSql,
   type SqliteCollectionKey,
 } from './sqliteSchema'
+import { mergeCapitalLotsWithDerivedTransactions } from './repositoryData'
 
 type SqliteRecord = AppData[SqliteCollectionKey][number]
 type PayloadRow = { payload: string }
@@ -278,13 +279,10 @@ export class SqliteRepository implements PartnerRepository {
       this.selectAll<ProfitCalculatorRecord>('profitCalculatorRecords'),
     ])
 
-    const normalizedTransactions = capitalTransactions.map(normalizeCapitalTransaction)
-    const lotIds = new Set(capitalLots.map((lot) => lot.id))
-    const derivedMissingLots = normalizedTransactions.flatMap((transaction) => {
-      const lot = capitalLotFromTransaction(transaction)
-      return lot && !lotIds.has(lot.id) ? [lot] : []
-    })
-    const mergedCapitalLots = [...capitalLots, ...derivedMissingLots]
+    const { mergedCapitalLots, normalizedTransactions } = mergeCapitalLotsWithDerivedTransactions(
+      capitalLots,
+      capitalTransactions,
+    )
 
     return {
       ...emptyAppData,

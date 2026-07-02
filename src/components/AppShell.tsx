@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Badge } from './common'
+import { APP_VERSION } from '../utils/runtimeInfo'
 
 export type PageKey =
   | 'dashboard'
@@ -128,7 +129,7 @@ export function AppShell({ activePage, onPageChange, children, toast }: AppShell
 
       <div className="sidebar-footer">
         <Badge tone="success">本地数据</Badge>
-        <span>{variant === 'mobile' ? '当前版本 V1.0' : '无云同步 · 无登录'}</span>
+        <span>{variant === 'mobile' ? `当前版本 V${APP_VERSION}` : `无云同步 · V${APP_VERSION}`}</span>
       </div>
     </>
   )

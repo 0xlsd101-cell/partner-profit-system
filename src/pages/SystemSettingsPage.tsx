@@ -1,5 +1,12 @@
 import { ShieldCheck } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Badge, Notice, PageHeader, Panel } from '../components/common'
+import {
+  APP_VERSION,
+  desktopSqlitePathLabel,
+  runtimeModeLabel,
+  storageModeLabel,
+} from '../utils/runtimeInfo'
 
 const ruleGroups = [
   {
@@ -25,6 +32,29 @@ const ruleGroups = [
 ]
 
 export function SystemSettingsPage() {
+  const [sqlitePath, setSqlitePath] = useState('正在读取本地数据库位置...')
+
+  useEffect(() => {
+    let ignore = false
+
+    desktopSqlitePathLabel().then((path) => {
+      if (!ignore) {
+        setSqlitePath(path)
+      }
+    })
+
+    return () => {
+      ignore = true
+    }
+  }, [])
+
+  const runtimeRows = [
+    `当前版本：V${APP_VERSION}`,
+    `运行模式：${runtimeModeLabel()}`,
+    `存储模式：${storageModeLabel()}`,
+    `本地数据库：${sqlitePath}`,
+  ]
+
   return (
     <div className="page-stack">
       <PageHeader
@@ -36,6 +66,17 @@ export function SystemSettingsPage() {
       <Notice tone="info">
         此页面用于确认当前账务口径。修改收益规则、年度周期或历史修正规则需要通过后续版本设计，不在本页直接调整。
       </Notice>
+
+      <Panel title="运行环境">
+        <ul className="rule-list">
+          {runtimeRows.map((item) => (
+            <li key={item}>
+              <ShieldCheck size={16} />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </Panel>
 
       <div className="rule-grid">
         {ruleGroups.map((group) => (

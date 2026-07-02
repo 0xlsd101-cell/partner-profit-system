@@ -34,6 +34,7 @@ import {
   type ClearLocalDataOptions,
 } from './dataClearSafety'
 import { validateImportAllocationsAgainstLockedSettlements } from './importSafety'
+import { mergeCapitalLotsWithDerivedTransactions } from './repositoryData'
 
 class PartnerDividendDb extends Dexie {
   members!: Table<Member, string>
@@ -169,13 +170,10 @@ export class IndexedDbRepository implements PartnerRepository {
       this.db.profitCalculatorRecords.toArray(),
     ])
 
-    const normalizedTransactions = capitalTransactions.map(normalizeCapitalTransaction)
-    const lotIds = new Set(capitalLots.map((lot) => lot.id))
-    const derivedMissingLots = normalizedTransactions.flatMap((transaction) => {
-      const lot = capitalLotFromTransaction(transaction)
-      return lot && !lotIds.has(lot.id) ? [lot] : []
-    })
-    const mergedCapitalLots = [...capitalLots, ...derivedMissingLots]
+    const { mergedCapitalLots, normalizedTransactions } = mergeCapitalLotsWithDerivedTransactions(
+      capitalLots,
+      capitalTransactions,
+    )
 
     return {
       members: members.sort((a, b) => a.name.localeCompare(b.name, 'zh-CN')),

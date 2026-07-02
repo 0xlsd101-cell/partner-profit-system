@@ -16,20 +16,9 @@ import { IndexedDbRepository } from './indexedDbRepository'
 import type { ClearLocalDataOptions } from './dataClearSafety'
 import type { DangerousReplaceOptions } from './dataSafety'
 import type { PartnerRepository } from './repository'
+import { isTauriRuntime } from '../utils/runtimeInfo'
 
-declare global {
-  interface Window {
-    __TAURI_INTERNALS__?: unknown
-    __TAURI__?: unknown
-  }
-}
-
-export function isTauriRuntime(): boolean {
-  return (
-    typeof window !== 'undefined' &&
-    (Boolean(window.__TAURI_INTERNALS__) || Boolean(window.__TAURI__))
-  )
-}
+export { isTauriRuntime }
 
 class LazySqliteRepository implements PartnerRepository {
   private repositoryPromise: Promise<PartnerRepository> | undefined

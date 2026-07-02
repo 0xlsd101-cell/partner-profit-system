@@ -108,6 +108,7 @@ export function BackupPage({ data, repository, reload, notify }: PageProps) {
   const [clearConfirmText, setClearConfirmText] = useState('')
   const [clearReason, setClearReason] = useState('')
   const [clearMessage, setClearMessage] = useState('')
+  const [isClearingLocalData, setIsClearingLocalData] = useState(false)
   const currentSummary = useMemo(() => summaryFromData(data), [data])
   const clearCounts: ClearLocalDataCounts = useMemo(
     () => ({
@@ -379,6 +380,9 @@ function parseBackupSummary(raw: string) {
     }
 
     try {
+      setIsClearingLocalData(true)
+      setClearMessage('正在清除本地数据...')
+      await new Promise<void>((resolve) => window.setTimeout(resolve, 0))
       await repository.clearLocalData({
         confirmClearData: true,
         confirmationText: clearConfirmText.trim(),
@@ -387,7 +391,7 @@ function parseBackupSummary(raw: string) {
       cancelImport()
       setClearConfirmText('')
       setClearReason('')
-      setClearMessage('')
+      setClearMessage('本地数据已清除。')
       await reload()
       notify('本地数据已清除。')
     } catch (err) {
@@ -396,6 +400,8 @@ function parseBackupSummary(raw: string) {
           ? `本地数据清除失败，请先导出备份后重试。${err.message}`
           : '本地数据清除失败，请先导出备份后重试。',
       )
+    } finally {
+      setIsClearingLocalData(false)
     }
   }
 
@@ -612,8 +618,8 @@ function parseBackupSummary(raw: string) {
           >
             取消
           </Button>
-          <Button type="button" variant="danger" onClick={clearLocalData} disabled={!canClearLocalData}>
-            我已备份，确认清除
+          <Button type="button" variant="danger" onClick={clearLocalData} disabled={!canClearLocalData || isClearingLocalData}>
+            {isClearingLocalData ? '正在清除...' : '我已备份，确认清除'}
           </Button>
         </div>
         {clearMessage ? <Notice tone="warning">{clearMessage}</Notice> : null}
